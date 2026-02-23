@@ -1,0 +1,55 @@
+# ==============================================================
+# Supabase CLI Configuration
+# Nebula Fresh Produce Management System
+#
+# docs: https://supabase.com/docs/guides/local-development
+# ==============================================================
+
+[api]
+# Port to use for the local API server (supabase start)
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+# Port to use for the local PostgreSQL database
+port = 54322
+shadow_port = 54320
+major_version = 17
+
+[studio]
+# Port to use for the local Supabase Studio dashboard
+port = 54323
+api_url = "http://localhost"
+
+[inbucket]
+# Port to use for the local email testing server
+port = 54324
+
+[storage]
+file_size_limit = "50MiB"
+
+[auth]
+site_url = "http://localhost:5173"   # Vite dev server default
+additional_redirect_urls = ["https://localhost:5173"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = false
+enable_confirmations = false   # set true in production
+
+[auth.sms]
+enable_signup = false
+
+[auth.external.google]
+enabled = false
+# client_id = ""
+# secret = ""
+
+[analytics]
+enabled = false

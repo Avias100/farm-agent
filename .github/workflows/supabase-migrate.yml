@@ -1,0 +1,48 @@
+# ==============================================================
+# GitHub Actions: Supabase Database Migration CI
+# Nebula Fresh Produce Management System
+#
+# Runs on every push to main that touches supabase/migrations/.
+# Applies pending migrations to the linked Supabase project.
+#
+# Required GitHub Secrets:
+#   SUPABASE_ACCESS_TOKEN   — from app.supabase.com > Account > Access Tokens
+#   SUPABASE_DB_PASSWORD    — your project database password
+#   SUPABASE_PROJECT_ID     — your project ref (e.g. abcdefghijklmnop)
+# ==============================================================
+
+name: Supabase Migrate
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'supabase/migrations/**'
+
+jobs:
+  migrate:
+    name: Apply Supabase Migrations
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link Supabase project
+        run: |
+          supabase link \
+            --project-ref ${{ secrets.SUPABASE_PROJECT_ID }} \
+            --password    ${{ secrets.SUPABASE_DB_PASSWORD }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Push migrations to production
+        run: supabase db push
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
