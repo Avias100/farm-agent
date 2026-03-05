@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import Layout from '../../components/Layout'
 import ActivityForm from './ActivityForm'
 import ActivityList from './ActivityList'
-import { useTimer } from '../../hooks/useTimer'
+import ActiveTasksList from './ActiveTasksList'
+import ScheduledTasksList from './ScheduledTasksList'
 import { useFarmData } from '../../hooks/useFarmData'
 import { useSync } from '../../hooks/useSync'
 import db from '../../db/localDb'
@@ -16,42 +17,50 @@ import db from '../../db/localDb'
  *  1. ActivityForm  — section/task/worker selectors + start/stop timer
  *  2. ActivityList  — live list of today's activities from IndexedDB
  *
- * On mount, we check IndexedDB for any "In Progress" activities so that
- * if a worker closes the app mid-task and reopens it, the timer resumes
- * from the original start_time.
+ * SUPPORTS CONCURRENT TASKS:
+ * Multiple staff members can have tasks running simultaneously.
+ * Each worker can only have ONE active task at a time.
  */
 export default function ActivityLoggerPage() {
-  const timer            = useTimer()
   const { sections, people, isLoading } = useFarmData()
   const { refreshPendingCount }         = useSync()
 
-  // The currently active (In Progress) activity — null if none running
-  const [activeActivity, setActiveActivity] = useState(null)
-  const [isRestoring,    setIsRestoring]    = useState(true)
+  // All currently active (In Progress) activities — array of activities
+  const [activeActivities, setActiveActivities] = useState([])
+  const [isRestoring,      setIsRestoring]      = useState(true)
 
-  // On mount: look for any In Progress activity to restore the timer
+  // On mount: load all In Progress activities
   useEffect(() => {
-    async function restoreInProgressActivity() {
+    async function restoreInProgressActivities() {
       const inProgress = await db.activities
         .where('status')
         .equals('In Progress')
-        .first()
+        .toArray()
 
-      if (inProgress) {
-        setActiveActivity(inProgress)
-        timer.restoreFrom(inProgress.start_time)
-      }
+      setActiveActivities(inProgress)
       setIsRestoring(false)
     }
-    restoreInProgressActivity()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    restoreInProgressActivities()
+  }, [])
 
   function handleActivityStart(activity) {
-    setActiveActivity(activity)
+    setActiveActivities(prev => [...prev, activity])
   }
 
-  function handleActivityEnd() {
-    setActiveActivity(null)
+  function handleActivityEnd(activityId) {
+    setActiveActivities(prev => prev.filter(a => a.localId !== activityId && a.offline_id !== activityId))
+  }
+
+  function handleTasksStarted() {
+    // Reload active activities when scheduled tasks are batch-started
+    async function reloadActiveActivities() {
+      const inProgress = await db.activities
+        .where('status')
+        .equals('In Progress')
+        .toArray()
+      setActiveActivities(inProgress)
+    }
+    reloadActiveActivities()
   }
 
   if (isRestoring || isLoading) {
@@ -83,12 +92,28 @@ export default function ActivityLoggerPage() {
           </div>
         )}
 
+        {/* ── ACTIVE TASKS ────────────────────────────────────── */}
+        <ActiveTasksList
+          activeActivities={activeActivities}
+          sections={sections}
+          people={people}
+          onActivityEnd={handleActivityEnd}
+          onSyncNeeded={refreshPendingCount}
+        />
+
+        {/* ── SCHEDULED TASKS (not started yet) ───────────────── */}
+        <ScheduledTasksList
+          sections={sections}
+          people={people}
+          onTasksStarted={handleTasksStarted}
+          onSyncNeeded={refreshPendingCount}
+        />
+
         {/* ── FORM ─────────────────────────────────────────────── */}
         <ActivityForm
           sections={sections}
           people={people}
-          activeActivity={activeActivity}
-          timer={timer}
+          activeActivities={activeActivities}
           onActivityStart={handleActivityStart}
           onActivityEnd={handleActivityEnd}
           onSyncNeeded={refreshPendingCount}

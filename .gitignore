@@ -1,1 +1,34 @@
-node_modules
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.*.local
+
+# Vite / editor caches
+.vite/
+*.local
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Supabase local dev (generated files, not migrations)
+supabase/.branches/
+supabase/.temp/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local Netlify folder
+.netlify

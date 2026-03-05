@@ -51,3 +51,77 @@ export function todayStartISO() {
   d.setHours(0, 0, 0, 0)
   return d.toISOString()
 }
+
+/**
+ * Format a number as South African Rand.
+ * e.g. 824.75 → "R 824.75" | 1234.5 → "R 1,234.50"
+ */
+export function formatZAR(amount) {
+  if (amount == null) return '—'
+  return (
+    'R\u00A0' +
+    new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(Number(amount))
+  )
+}
+
+/**
+ * Format a date string as "Mon, 23 Feb 2026" (no time).
+ */
+export function formatDate(dateInput) {
+  if (!dateInput) return '—'
+  const d = typeof dateInput === 'string' ? new Date(dateInput + 'T00:00:00') : dateInput
+  return d.toLocaleDateString('en-ZA', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
+/**
+ * Returns today's date as a YYYY-MM-DD string (for <input type="date"> defaults).
+ */
+export function todayDateString() {
+  return new Date().toISOString().slice(0, 10)
+}
+
+/**
+ * Client-side net income calculation — mirrors the SQL GENERATED ALWAYS AS formula.
+ * Used for the live preview in BatchForm before the record is saved to Supabase.
+ *
+ * @param {object} p
+ * @param {number} p.qty
+ * @param {number} p.price
+ * @param {number} p.marketRate   default 0.05
+ * @param {number} p.agentRate    default 0.085
+ * @param {number} p.vatRate      default 0.15
+ * @param {number} p.bankCharge   default 20
+ * @returns {{ gross, marketComm, agentComm, vatOnComm, netIncome }}
+ */
+export function calcBatchFinancials({
+  qty        = 0,
+  price      = 0,
+  marketRate = 0.05,
+  agentRate  = 0.085,
+  vatRate    = 0.15,
+  bankCharge = 20,
+}) {
+  const gross      = qty * price
+  const marketComm = gross * marketRate
+  const agentComm  = gross * agentRate
+  const vatOnComm  = (marketComm + agentComm) * vatRate
+  const netIncome  =
+    gross - marketComm * (1 + vatRate) - agentComm * (1 + vatRate) - bankCharge
+
+  const r = (n) => Math.round(n * 100) / 100  // round to 2dp
+  return {
+    gross:      r(gross),
+    marketComm: r(marketComm),
+    agentComm:  r(agentComm),
+    vatOnComm:  r(vatOnComm),
+    netIncome:  r(netIncome),
+  }
+}

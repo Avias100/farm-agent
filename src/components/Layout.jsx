@@ -1,20 +1,21 @@
 import SyncStatusBar from './SyncStatusBar'
-import { useSync } from '../hooks/useSync'
+import BottomNav     from './BottomNav'
+import HeaderMenu    from './HeaderMenu'
+import { useSync }   from '../hooks/useSync'
 
 /**
  * App shell layout.
  *
  * Structure:
  *   ┌─────────────────────────┐
- *   │ SyncStatusBar (fixed)   │  ← network + sync queue
+ *   │ SyncStatusBar           │  ← network status + pending sync count
  *   ├─────────────────────────┤
- *   │ Header (app name + nav) │
+ *   │ Header                  │  ← farm name + page title
  *   ├─────────────────────────┤
- *   │ <children> (scrollable) │
+ *   │ <children>              │  ← scrollable page content
+ *   ├─────────────────────────┤
+ *   │ BottomNav               │  ← module navigation tabs
  *   └─────────────────────────┘
- *
- * The layout is intentionally minimal for Module 1.
- * A bottom navigation bar will be added in Module 2 when routing is introduced.
  */
 export default function Layout({ title = 'Nebula Fresh Produce', children }) {
   const { pendingCount, isSyncing, lastSyncedAt, syncNow } = useSync()
@@ -30,21 +31,24 @@ export default function Layout({ title = 'Nebula Fresh Produce', children }) {
       />
 
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-        {/* Farm logo placeholder */}
-        <div className="w-8 h-8 rounded-lg bg-nebula-600 flex items-center justify-center flex-shrink-0">
-          <span className="text-white text-base leading-none">🌿</span>
+      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 flex-shrink-0">
+        <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
+          <img src="/logo.svg" alt="Nebula Logo" className="w-full h-full object-cover" />
         </div>
-        <div>
+        <div className="flex-1">
           <h1 className="text-base font-bold text-gray-900 leading-tight">{title}</h1>
           <p className="text-xs text-gray-500 leading-tight">Nebula Fresh Produce · Gauteng</p>
         </div>
+        <HeaderMenu />
       </header>
 
-      {/* Page content */}
-      <main className="flex-1 overflow-y-auto">
+      {/* Page content — fills remaining height, scrollable */}
+      <main className="flex-1 overflow-y-auto pb-20">
         {children}
       </main>
+
+      {/* Bottom navigation — fixed above phone home indicator */}
+      <BottomNav />
     </div>
   )
 }

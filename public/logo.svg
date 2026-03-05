@@ -1,0 +1,46 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with gradient -->
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#16a34a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#15803d;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#dcfce7;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded background -->
+  <rect width="512" height="512" rx="110" fill="url(#bgGrad)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="420" cy="90" r="40" fill="#ffffff" opacity="0.1"/>
+  <circle cx="80" cy="430" r="50" fill="#ffffff" opacity="0.08"/>
+  <circle cx="440" cy="420" r="30" fill="#ffffff" opacity="0.12"/>
+  
+  <!-- Main leaf icon -->
+  <g transform="translate(256, 200)">
+    <!-- Main leaf shape -->
+    <path d="M 0,-80 Q -60,-40 -70,20 Q -60,60 -20,70 Q 0,75 0,75 Q 0,75 20,70 Q 60,60 70,20 Q 60,-40 0,-80 Z" 
+          fill="url(#leafGrad)" opacity="0.95"/>
+    
+    <!-- Leaf vein -->
+    <path d="M 0,-75 L 0,70" stroke="#16a34a" stroke-width="3" opacity="0.3"/>
+    
+    <!-- Secondary veins -->
+    <path d="M 0,-40 Q -30,-20 -45,10" stroke="#16a34a" stroke-width="2" opacity="0.2"/>
+    <path d="M 0,-40 Q 30,-20 45,10" stroke="#16a34a" stroke-width="2" opacity="0.2"/>
+    <path d="M 0,0 Q -35,15 -50,40" stroke="#16a34a" stroke-width="2" opacity="0.2"/>
+    <path d="M 0,0 Q 35,15 50,40" stroke="#16a34a" stroke-width="2" opacity="0.2"/>
+  </g>
+  
+  <!-- Company name -->
+  <text x="256" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="900" text-anchor="middle" fill="#ffffff" letter-spacing="2">NEBULA</text>
+  
+  <!-- Tagline -->
+  <text x="256" y="385" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" text-anchor="middle" fill="#dcfce7" letter-spacing="3">FRESH PRODUCE</text>
+  
+  <!-- Subtitle -->
+  <text x="256" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="400" text-anchor="middle" fill="#bbf7d0" opacity="0.8">Farm Management</text>
+</svg>

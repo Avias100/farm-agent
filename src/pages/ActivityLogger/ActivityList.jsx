@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import db from '../../db/localDb'
 import Badge from '../../components/ui/Badge'
 import { formatDuration, todayStartISO } from '../../lib/utils'
+import { supabase } from '../../lib/supabase'
 
 /**
  * Live-updating list of activities logged today.
@@ -71,6 +73,7 @@ function statusBadge(status, synced) {
 
 function ActivityCard({ activity, sectionName, personName }) {
   const { task_type, status, start_time, end_time, duration_minutes, notes, synced } = activity
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // Compute duration locally if end_time exists (server computes the DB column)
   const localDuration = end_time && start_time
@@ -84,10 +87,40 @@ function ActivityCard({ activity, sectionName, personName }) {
     ? new Date(start_time).toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit', hour12: false })
     : '—'
 
+  async function handleDelete() {
+    if (!confirm('Delete this activity? This cannot be undone.')) return
+    
+    setIsDeleting(true)
+    
+    try {
+      // Delete from IndexedDB using localId (the primary key)
+      await db.activities.delete(activity.localId)
+      
+      // Delete from Supabase if it has been synced
+      if (activity.id && navigator.onLine) {
+        await supabase.from('activities').delete().eq('id', activity.id)
+      }
+    } catch (err) {
+      console.error('[ActivityList] Delete error:', err)
+      alert('Failed to delete activity')
+      setIsDeleting(false)
+    }
+  }
+
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-3.5 shadow-sm">
+    <div className="bg-white rounded-xl border border-gray-100 p-3.5 shadow-sm relative">
+      {/* Delete button */}
+      <button
+        onClick={handleDelete}
+        disabled={isDeleting}
+        className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50 flex items-center justify-center text-sm"
+        title="Delete activity"
+      >
+        {isDeleting ? '⏳' : '🗑️'}
+      </button>
+
       {/* Top row: task type + status */}
-      <div className="flex items-center justify-between gap-2 mb-1.5">
+      <div className="flex items-center justify-between gap-2 mb-1.5 pr-8">
         <span className="font-semibold text-sm text-gray-900">{task_type}</span>
         {statusBadge(status, synced)}
       </div>

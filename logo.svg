@@ -1,0 +1,32 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle with green gradient -->
+  <defs>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16a34a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" rx="80" fill="url(#greenGrad)"/>
+  
+  <!-- Simple leaf design -->
+  <g transform="translate(256, 256)">
+    <!-- Center stem -->
+    <rect x="-8" y="-120" width="16" height="240" rx="8" fill="#ffffff" opacity="0.9"/>
+    
+    <!-- Left leaves -->
+    <ellipse cx="-60" cy="-60" rx="55" ry="35" fill="#ffffff" opacity="0.85" transform="rotate(-25, -60, -60)"/>
+    <ellipse cx="-50" cy="0" rx="50" ry="32" fill="#ffffff" opacity="0.85" transform="rotate(-15, -50, 0)"/>
+    <ellipse cx="-40" cy="60" rx="45" ry="28" fill="#ffffff" opacity="0.85" transform="rotate(-10, -40, 60)"/>
+    
+    <!-- Right leaves -->
+    <ellipse cx="60" cy="-60" rx="55" ry="35" fill="#ffffff" opacity="0.85" transform="rotate(25, 60, -60)"/>
+    <ellipse cx="50" cy="0" rx="50" ry="32" fill="#ffffff" opacity="0.85" transform="rotate(15, 50, 0)"/>
+    <ellipse cx="40" cy="60" rx="45" ry="28" fill="#ffffff" opacity="0.85" transform="rotate(10, 40, 60)"/>
+  </g>
+  
+  <!-- Company name text -->
+  <text x="256" y="440" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#ffffff">NEBULA</text>
+  <text x="256" y="475" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#ffffff" opacity="0.9">FRESH PRODUCE</text>
+</svg>
