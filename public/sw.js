@@ -1,5 +1,5 @@
 // Service Worker for Nebula Farm Manager
-const CACHE_NAME = 'nebula-farm-v1'
+const CACHE_NAME = 'nebula-farm-v2-no-auth'
 const urlsToCache = [
   '/',
   '/index.html',
